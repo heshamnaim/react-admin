@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, { Component, cloneElement } from 'react';
 import PropTypes from 'prop-types';
-import { sanitizeListRestProps } from 'ra-core';
+import { sanitizeListRestProps, getComponentsFromRecords } from 'ra-core';
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableCell from '@material-ui/core/TableCell';
@@ -12,6 +12,7 @@ import classnames from 'classnames';
 
 import DatagridHeaderCell from './DatagridHeaderCell';
 import DatagridBody from './DatagridBody';
+import fieldTypes from '../field/fieldTypes';
 
 const styles = {
     table: {
@@ -124,7 +125,10 @@ class Datagrid extends Component {
         if (!isLoading && (ids.length === 0 || total === 0)) {
             return null;
         }
-
+        const fields =
+            React.Children.count(children) > 0
+                ? React.Children.toArray(children)
+                : getComponentsFromRecords(ids.map(id => data[id]), fieldTypes);
         return (
             <Table
                 className={classnames(classes.table, className)}
@@ -148,8 +152,7 @@ class Datagrid extends Component {
                                 />
                             </TableCell>
                         )}
-                        {React.Children.map(
-                            children,
+                        {fields.map(
                             (field, index) =>
                                 field ? (
                                     <DatagridHeaderCell
@@ -183,7 +186,11 @@ class Datagrid extends Component {
                     selectedIds={selectedIds}
                     version={version}
                 >
-                    {children}
+                    {fields.map((field, index) =>
+                        cloneElement(field, {
+                            key: field.props.source || index,
+                        })
+                    )}
                 </DatagridBody>
             </Table>
         );
@@ -192,7 +199,7 @@ class Datagrid extends Component {
 
 Datagrid.propTypes = {
     basePath: PropTypes.string,
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
     classes: PropTypes.object,
     className: PropTypes.string,
     currentSort: PropTypes.shape({
