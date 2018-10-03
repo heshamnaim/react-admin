@@ -1,5 +1,16 @@
 import { createElement } from 'react';
 
+const pureRegex = /pure\((\w*)\)/;
+
+const getComponentNameForElement = element => {
+    const displayName = element.type.displayName;
+    const internalName = pureRegex.exec(displayName);
+    if (internalName && internalName[1]) {
+        return internalName[1];
+    }
+    return displayName;
+};
+
 class InferredElement {
     constructor(element, visualRepresentation) {
         this.element = element;
@@ -21,7 +32,7 @@ class InferredElement {
         if (this.visualRepresentation) {
             return this.visualRepresentation;
         }
-        return `<${this.element.type.displayName} source="${
+        return `<${getComponentNameForElement(this.element)} source="${
             this.element.props.source
         }" />`;
     }
