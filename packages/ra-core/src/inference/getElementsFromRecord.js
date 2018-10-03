@@ -1,4 +1,4 @@
-import getComponentFromValue from './getComponentFromValue';
+import inferElementFromValue from './inferElementFromValue';
 
 /**
  * Get a list of React-admin field components from a records
@@ -16,7 +16,7 @@ import getComponentFromValue from './getComponentFromValue';
  *     number: NumberField,
  *     reference: ReferenceField
  * };
- * const types = getComponentsFromRecord(record, types);
+ * const types = getElementsFromRecord(record, types);
  * // [
  * //    <NumberField source="id" />,
  * //    <TextField source="title" />,
@@ -29,7 +29,11 @@ export default (record, types) =>
         .reduce(
             (fields, fieldName) =>
                 fields.concat(
-                    getComponentFromValue(fieldName, record[fieldName], types)
+                    inferElementFromValue(
+                        fieldName,
+                        record[fieldName],
+                        types
+                    ).getElement()
                 ),
             []
         )

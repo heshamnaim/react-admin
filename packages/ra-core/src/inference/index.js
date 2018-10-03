@@ -1,2 +1,2 @@
-export getComponentsFromRecord from './getComponentsFromRecord';
-export getComponentsFromRecords from './getComponentsFromRecords';
+export getElementsFromRecord from './getElementsFromRecord';
+export getElementsFromRecords from './getElementsFromRecords';

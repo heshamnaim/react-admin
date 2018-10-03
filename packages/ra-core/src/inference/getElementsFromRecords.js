@@ -1,4 +1,4 @@
-import getComponentFromValues from './getComponentFromValues';
+import inferElementFromValues from './inferElementFromValues';
 import getValuesFromRecords from './getValuesFromRecords';
 
 /**
@@ -24,7 +24,7 @@ import getValuesFromRecords from './getValuesFromRecords';
  *     number: NumberField,
  *     reference: ReferenceField
  * };
- * const components = getComponentsFromRecords(records, types);
+ * const components = getElementsFromRecords(records, types);
  * // [
  * //    <NumberField source="id" />,
  * //    <TextField source="title" />,
@@ -39,14 +39,14 @@ export default (records, types, checkRequired = true) => {
         .reduce(
             (fields, fieldName) =>
                 fields.concat(
-                    getComponentFromValues(
+                    inferElementFromValues(
                         fieldName,
                         fieldValues[fieldName],
                         types,
                         checkRequired
                             ? fieldValues[fieldName].length === nbValues
                             : false
-                    )
+                    ).getElement()
                 ),
             []
         )

@@ -1,6 +1,7 @@
 import React, { cloneElement } from 'react';
 import getValuesFromRecords from './getValuesFromRecords';
-import getComponentFromValues from './getComponentFromValues';
+import inferElementFromValues from './inferElementFromValues';
+import InferredElement from './InferredElement';
 
 import {
     isArray,
@@ -67,18 +68,28 @@ const hasType = (type, types) => typeof types[type] !== 'undefined';
  * @param {String} name Property name, e.g. 'date_of_birth'
  * @param {mixed} value a value from which to determine the type, e.g. 12
  * @param {Object} types A set of components indexed by type. The string type is the only required one
+ *
+ * @return InferredElement
  */
 const getComponentFromValue = (name, value, types = defaultTypes) => {
     if (name === 'id' && hasType('id', types)) {
-        return types.id && <types.id source={name} />;
+        return InferredElement.create(types.id, name);
     }
     if (name.substr(name.length - 3) === '_id' && hasType('reference', types)) {
         const reference = name.substr(0, name.length - 3) + 's';
         return (
-            types.reference && (
-                <types.reference source={name} reference={reference}>
-                    <types.id source="id" />
-                </types.reference>
+            types.reference &&
+            new InferredElement(
+                (
+                    <types.reference source={name} reference={reference}>
+                        <types.id source="id" />
+                    </types.reference>
+                ),
+                `<${
+                    types.reference
+                } source="${name}" reference="${reference}"><${
+                    types.id
+                } source="id" />><${types.reference}>`
             )
         );
     }
@@ -88,63 +99,75 @@ const getComponentFromValue = (name, value, types = defaultTypes) => {
     ) {
         const reference = name.substr(0, name.length - 4) + 's';
         return (
-            types.referenceArray && (
-                <types.referenceArray source={name} reference={reference}>
-                    <types.id source="id" />
-                </types.referenceArray>
+            types.referenceArray &&
+            new InferredElement(
+                (
+                    <types.referenceArray source={name} reference={reference}>
+                        <types.id source="id" />
+                    </types.referenceArray>
+                ),
+                `<${
+                    types.referenceArray
+                } source="${name}" reference="${reference}"><${
+                    types.id
+                } source="id" />><${types.referenceArray}>`
             )
         );
     }
     if (value == null) {
         // FIXME introspect further using name
-        return <types.string source={name} />;
+        return InferredElement.create(types.string, name);
     }
     if (isArray(value)) {
         if (isObject(value[0]) && hasType('array', types)) {
             const leafValues = getValuesFromRecords(value);
+            // FIXME bad visual representation
             return (
-                types.array && (
-                    <types.array source={name}>
-                        {Object.keys(leafValues).map((leafName, index) =>
-                            cloneElement(
-                                getComponentFromValues(
-                                    leafName,
-                                    leafValues[leafName],
-                                    types
-                                ),
-                                { key: index }
-                            )
-                        )}
-                    </types.array>
+                types.array &&
+                new InferredElement(
+                    (
+                        <types.array source={name}>
+                            {Object.keys(leafValues).map((leafName, index) =>
+                                cloneElement(
+                                    inferElementFromValues(
+                                        leafName,
+                                        leafValues[leafName],
+                                        types
+                                    ).getElement(),
+                                    { key: index }
+                                )
+                            )}
+                        </types.array>
+                    )
                 )
             );
         }
         // FIXME introspect further
-        return <types.string source={name} />;
+        return InferredElement.create(types.string, name);
     }
     if (isBoolean(value) && hasType('boolean', types)) {
-        return types.boolean && <types.boolean source={name} />;
+        return InferredElement.create(types.boolean, name);
     }
     if (isDate(value) && hasType('date', types)) {
-        return types.date && <types.date source={name} />;
+        return InferredElement.create(types.date, name);
     }
     if (isString(value)) {
         if (name === 'email' && hasType('email', types)) {
-            return types.email && <types.email source={name} />;
+            return InferredElement.create(types.email, name);
         }
         if (name === 'url' && hasType('url', types)) {
-            return types.url && <types.url source={name} />;
+            return InferredElement.create(types.url, name);
         }
         if (isDateString(value) && hasType('date', types)) {
-            return types.date && <types.date source={name} />;
+            return InferredElement.create(types.date, name);
         }
         if (isHtml(value) && hasType('richText', types)) {
-            return types.richText && <types.richText source={name} />;
+            return InferredElement.create(types.richText, name);
         }
-        return <types.string source={name} />;
+        return InferredElement.create(types.string, name);
     }
     if ((isInteger(value) || isNumeric(value)) && hasType('number', types)) {
-        return types.number && <types.number source={name} />;
+        return InferredElement.create(types.number, name);
     }
     if (isObject(value)) {
         // we need to go deeper
@@ -153,7 +176,7 @@ const getComponentFromValue = (name, value, types = defaultTypes) => {
         const leafValue = value[propName];
         return getComponentFromValue(`${name}.${propName}`, leafValue, types);
     }
-    return <types.string source={name} />;
+    return InferredElement.create(types.string, name);
 };
 
 export default getComponentFromValue;

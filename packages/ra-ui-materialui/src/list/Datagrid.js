@@ -1,6 +1,6 @@
 import React, { Component, cloneElement } from 'react';
 import PropTypes from 'prop-types';
-import { sanitizeListRestProps, getComponentsFromRecords } from 'ra-core';
+import { sanitizeListRestProps, getElementsFromRecords } from 'ra-core';
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableCell from '@material-ui/core/TableCell';
@@ -128,7 +128,7 @@ class Datagrid extends Component {
         const fields =
             React.Children.count(children) > 0
                 ? React.Children.toArray(children)
-                : getComponentsFromRecords(ids.map(id => data[id]), fieldTypes);
+                : getElementsFromRecords(ids.map(id => data[id]), fieldTypes);
         return (
             <Table
                 className={classnames(classes.table, className)}
