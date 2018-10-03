@@ -46,9 +46,5 @@ export default (records, types) => {
                 ),
             []
         )
-        .filter(inferredElement => inferredElement.isDefined())
-        .map(inferredElement => {
-            console.log(inferredElement.getVisualRepresentation());
-            return inferredElement.getElement();
-        });
+        .filter(inferredElement => inferredElement.isDefined());
 };

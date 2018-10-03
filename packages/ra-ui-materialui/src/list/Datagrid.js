@@ -77,6 +77,8 @@ const styles = {
  * </ReferenceManyField>
  */
 class Datagrid extends Component {
+    inferredFields = null;
+
     updateSort = event => {
         event.stopPropagation();
         this.props.setSort(event.currentTarget.dataset.sort);
@@ -97,6 +99,33 @@ class Datagrid extends Component {
             onSelect([]);
         }
     };
+
+    componentDidUpdate() {
+        const { children, ids, data } = this.props;
+        if (
+            React.Children.count(children) == 0 &&
+            ids.length > 0 &&
+            data &&
+            !this.inferredFields
+        ) {
+            const inferredElements = getElementsFromRecords(
+                ids.map(id => data[id]),
+                fieldTypes
+            );
+            this.inferredFields = inferredElements.map(inferredElement =>
+                inferredElement.getElement()
+            );
+            const inferredFieldsRepresentation = inferredElements
+                .map(inferredElement =>
+                    inferredElement.getVisualRepresentation()
+                )
+                .join('\n  ');
+            console.log(`Inferred Datagrid children:
+<Datagrid>
+  ${inferredFieldsRepresentation}
+</Datagrid>`);
+        }
+    }
 
     render() {
         const {
@@ -125,10 +154,7 @@ class Datagrid extends Component {
         if (!isLoading && (ids.length === 0 || total === 0)) {
             return null;
         }
-        const fields =
-            React.Children.count(children) > 0
-                ? React.Children.toArray(children)
-                : getElementsFromRecords(ids.map(id => data[id]), fieldTypes);
+        const fields = this.inferredFields || React.Children.toArray(children);
         return (
             <Table
                 className={classnames(classes.table, className)}
