@@ -2,19 +2,23 @@ import React, { Component } from 'react';
 import InferredElement from './InferredElement';
 
 describe('InferredElement', () => {
+    it('should accept null type', () => {
+        const ie = new InferredElement();
+        expect(ie.getElement()).toBeUndefined();
+    });
     describe('getVisualRepresentation', () => {
         it('should return the visual representation when given', () => {
             const DummyComponent = () => {};
-            const ic = new InferredElement(
+            const ie = new InferredElement(
                 <DummyComponent source="foo" />,
                 'bar'
             );
-            expect(ic.getVisualRepresentation()).toBe('bar');
+            expect(ie.getVisualRepresentation()).toBe('bar');
         });
         it('should return a good default visual representation for functional components', () => {
             const DummyComponent = () => {};
-            const ic = new InferredElement(<DummyComponent source="foo" />);
-            expect(ic.getVisualRepresentation()).toBe(
+            const ie = new InferredElement(<DummyComponent source="foo" />);
+            expect(ie.getVisualRepresentation()).toBe(
                 '<DummyComponent source="foo" />'
             );
         });
@@ -24,8 +28,8 @@ describe('InferredElement', () => {
                     return null;
                 }
             }
-            const ic = new InferredElement(<DummyComponent source="foo" />);
-            expect(ic.getVisualRepresentation()).toBe(
+            const ie = new InferredElement(<DummyComponent source="foo" />);
+            expect(ie.getVisualRepresentation()).toBe(
                 '<DummyComponent source="foo" />'
             );
         });
