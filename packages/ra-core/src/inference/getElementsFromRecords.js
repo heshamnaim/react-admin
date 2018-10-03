@@ -32,9 +32,8 @@ import getValuesFromRecords from './getValuesFromRecords';
  * //    <ReferenceField source="user_id" reference="users"><NumberField source="id" /></ReferenceField>,
  * // ];
  */
-export default (records, types, checkRequired = true) => {
+export default (records, types) => {
     const fieldValues = getValuesFromRecords(records);
-    const nbValues = records.length;
     return Object.keys(fieldValues)
         .reduce(
             (fields, fieldName) =>
@@ -42,13 +41,14 @@ export default (records, types, checkRequired = true) => {
                     inferElementFromValues(
                         fieldName,
                         fieldValues[fieldName],
-                        types,
-                        checkRequired
-                            ? fieldValues[fieldName].length === nbValues
-                            : false
-                    ).getElement()
+                        types
+                    )
                 ),
             []
         )
-        .filter(x => x);
+        .filter(inferredElement => inferredElement.isDefined())
+        .map(inferredElement => {
+            console.log(inferredElement.getVisualRepresentation());
+            return inferredElement.getElement();
+        });
 };

@@ -10,17 +10,26 @@ class InferredElement {
         return this.element;
     }
 
+    isDefined() {
+        return !!this.element;
+    }
+
     getVisualRepresentation() {
-        return (
-            this.visualRepresentation ||
-            `<${this.element.type.name} source="${
-                this.element.props.source
-            }" />`
-        );
+        if (!this.element) {
+            return;
+        }
+        if (this.visualRepresentation) {
+            return this.visualRepresentation;
+        }
+        return `<${this.element.type.displayName} source="${
+            this.element.props.source
+        }" />`;
     }
 }
 
 InferredElement.create = (type, name) =>
-    type ? new InferredElement(createElement(type, { source: name })) : new InferredElement();
+    type
+        ? new InferredElement(createElement(type, { source: name }))
+        : new InferredElement();
 
 export default InferredElement;

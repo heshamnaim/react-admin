@@ -29,12 +29,12 @@ export default (record, types) =>
         .reduce(
             (fields, fieldName) =>
                 fields.concat(
-                    inferElementFromValue(
-                        fieldName,
-                        record[fieldName],
-                        types
-                    ).getElement()
+                    inferElementFromValue(fieldName, record[fieldName], types)
                 ),
             []
         )
-        .filter(x => x);
+        .filter(inferredElement => inferredElement.isDefined())
+        .map(inferredElement => {
+            console.log(inferredElement.getVisualRepresentation());
+            return inferredElement.getElement();
+        });
