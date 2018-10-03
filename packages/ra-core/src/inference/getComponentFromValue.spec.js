@@ -6,6 +6,21 @@ describe('getComponentFromValue', () => {
     function Bad() {}
     function Dummy() {}
 
+    it('should fall back to the nearest type if type is absent', () => {
+        const types = {
+            string: Good,
+        };
+        expect(getComponentFromValue('id', 'foo', types)).toEqual(
+            <Good source="id" />
+        );
+    });
+    it('should return null if type is falsy', () => {
+        const types = {
+            id: false,
+            string: Bad,
+        };
+        expect(getComponentFromValue('id', 'foo', types)).toEqual(false);
+    });
     it('should return an id field for field named id', () => {
         const types = {
             id: Good,

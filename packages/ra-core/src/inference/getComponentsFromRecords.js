@@ -35,18 +35,20 @@ import getValuesFromRecords from './getValuesFromRecords';
 export default (records, types, checkRequired = true) => {
     const fieldValues = getValuesFromRecords(records);
     const nbValues = records.length;
-    return Object.keys(fieldValues).reduce(
-        (fields, fieldName) =>
-            fields.concat(
-                getComponentFromValues(
-                    fieldName,
-                    fieldValues[fieldName],
-                    types,
-                    checkRequired
-                        ? fieldValues[fieldName].length === nbValues
-                        : false
-                )
-            ),
-        []
-    );
+    return Object.keys(fieldValues)
+        .reduce(
+            (fields, fieldName) =>
+                fields.concat(
+                    getComponentFromValues(
+                        fieldName,
+                        fieldValues[fieldName],
+                        types,
+                        checkRequired
+                            ? fieldValues[fieldName].length === nbValues
+                            : false
+                    )
+                ),
+            []
+        )
+        .filter(x => x);
 };

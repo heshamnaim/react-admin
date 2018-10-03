@@ -25,10 +25,12 @@ import getComponentFromValue from './getComponentFromValue';
  * // ];
  */
 export default (record, types) =>
-    Object.keys(record).reduce(
-        (fields, fieldName) =>
-            fields.concat(
-                getComponentFromValue(fieldName, record[fieldName], types)
-            ),
-        []
-    );
+    Object.keys(record)
+        .reduce(
+            (fields, fieldName) =>
+                fields.concat(
+                    getComponentFromValue(fieldName, record[fieldName], types)
+                ),
+            []
+        )
+        .filter(x => x);

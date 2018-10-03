@@ -5,7 +5,6 @@ import EmailField from './EmailField';
 import NumberField from './NumberField';
 import ReferenceField from './ReferenceField';
 import ReferenceArrayField from './ReferenceArrayField';
-import RichTextField from './RichTextField';
 import TextField from './TextField';
 import UrlField from './UrlField';
 
@@ -18,7 +17,7 @@ export default {
     number: NumberField,
     reference: ReferenceField,
     referenceArray: ReferenceArrayField,
-    richText: RichTextField,
+    richText: false, // never display a rich text field in a datagrid
     string: TextField,
     url: UrlField,
 };
