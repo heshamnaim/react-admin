@@ -1,46 +1,43 @@
 import { createElement } from 'react';
 
-const pureRegex = /pure\((\w*)\)/;
-
-const getComponentNameForElement = element => {
-    const displayName = element.type.displayName;
-    const internalName = pureRegex.exec(displayName);
-    if (internalName && internalName[1]) {
-        return internalName[1];
-    }
-    return displayName;
-};
-
 class InferredElement {
-    constructor(element, visualRepresentation) {
-        this.element = element;
-        this.visualRepresentation = visualRepresentation;
+    constructor(type, props, children) {
+        this.type = type;
+        this.props = props;
+        this.children = children;
     }
 
-    getElement() {
-        return this.element;
+    getElement(props = {}) {
+        if (!this.isDefined()) {
+            return;
+        }
+        return this.children
+            ? createElement(
+                  this.type.component,
+                  { ...this.props, ...props },
+                  this.children.length > 0
+                      ? this.children.map((child, index) =>
+                            child.getElement({ key: index }),
+                        )
+                      : this.children.getElement(),
+              )
+            : createElement(this.type.component, { ...this.props, ...props });
     }
 
     isDefined() {
-        return !!this.element;
+        return !!this.type;
     }
 
-    getVisualRepresentation() {
-        if (!this.element) {
+    getRepresentation() {
+        if (!this.isDefined()) {
             return;
         }
-        if (this.visualRepresentation) {
-            return this.visualRepresentation;
+        if (this.type.representation) {
+            return this.type.representation(this.props);
         }
-        return `<${getComponentNameForElement(this.element)} source="${
-            this.element.props.source
-        }" />`;
+        return `<${this.type.component.displayName ||
+            this.type.component.name} source="${this.props.source}" />`;
     }
 }
-
-InferredElement.create = (type, name) =>
-    type
-        ? new InferredElement(createElement(type, { source: name }))
-        : new InferredElement();
 
 export default InferredElement;

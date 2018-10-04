@@ -12,7 +12,7 @@ import classnames from 'classnames';
 
 import DatagridHeaderCell from './DatagridHeaderCell';
 import DatagridBody from './DatagridBody';
-import fieldTypes from '../field/fieldTypes';
+import datagridFieldTypes from './datagridFieldTypes';
 
 const styles = {
     table: {
@@ -92,8 +92,8 @@ class Datagrid extends Component {
                     (idList, id) =>
                         idList.includes(id) ? idList : idList.concat(id),
 
-                    selectedIds
-                )
+                    selectedIds,
+                ),
             );
         } else {
             onSelect([]);
@@ -110,15 +110,13 @@ class Datagrid extends Component {
         ) {
             const inferredElements = getElementsFromRecords(
                 ids.map(id => data[id]),
-                fieldTypes
+                datagridFieldTypes,
             );
             this.inferredFields = inferredElements.map(inferredElement =>
-                inferredElement.getElement()
+                inferredElement.getElement(),
             );
             const inferredFieldsRepresentation = inferredElements
-                .map(inferredElement =>
-                    inferredElement.getVisualRepresentation()
-                )
+                .map(inferredElement => inferredElement.getRepresentation())
                 .join('\n  ');
             console.log(`Inferred Datagrid children:
 <Datagrid>
@@ -171,7 +169,8 @@ class Datagrid extends Component {
                                         selectedIds.length > 0 &&
                                         ids.length > 0 &&
                                         !ids.find(
-                                            it => selectedIds.indexOf(it) === -1
+                                            it =>
+                                                selectedIds.indexOf(it) === -1,
                                         )
                                     }
                                     onChange={this.handleSelectAll}
@@ -193,7 +192,7 @@ class Datagrid extends Component {
                                         resource={resource}
                                         updateSort={this.updateSort}
                                     />
-                                ) : null
+                                ) : null,
                         )}
                     </TableRow>
                 </TableHead>
@@ -215,7 +214,7 @@ class Datagrid extends Component {
                     {fields.map((field, index) =>
                         cloneElement(field, {
                             key: field.props.source || index,
-                        })
+                        }),
                     )}
                 </DatagridBody>
             </Table>

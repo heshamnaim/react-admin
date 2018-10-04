@@ -6,32 +6,23 @@ describe('InferredElement', () => {
         const ie = new InferredElement();
         expect(ie.getElement()).toBeUndefined();
     });
-    describe('getVisualRepresentation', () => {
-        it('should return the visual representation when given', () => {
+    describe('getRepresentation', () => {
+        it('should return a default visual representation', () => {
             const DummyComponent = () => {};
-            const ie = new InferredElement(
-                <DummyComponent source="foo" />,
-                'bar'
-            );
-            expect(ie.getVisualRepresentation()).toBe('bar');
-        });
-        it('should return a good default visual representation for functional components', () => {
-            const DummyComponent = () => {};
-            const ie = new InferredElement(<DummyComponent source="foo" />);
-            expect(ie.getVisualRepresentation()).toBe(
-                '<DummyComponent source="foo" />'
+            const dummyType = { component: DummyComponent };
+            const ie = new InferredElement(dummyType, { source: 'foo' });
+            expect(ie.getRepresentation()).toBe(
+                '<DummyComponent source="foo" />',
             );
         });
-        it('should return a good default visual representation for class components', () => {
-            class DummyComponent extends Component {
-                render() {
-                    return null;
-                }
-            }
-            const ie = new InferredElement(<DummyComponent source="foo" />);
-            expect(ie.getVisualRepresentation()).toBe(
-                '<DummyComponent source="foo" />'
-            );
+        it('should return a representation based on the representation type property', () => {
+            const DummyComponent = () => {};
+            const dummyType = {
+                component: DummyComponent,
+                representation: props => `hello, ${props.source}!`,
+            };
+            const ie = new InferredElement(dummyType, { source: 'foo' });
+            expect(ie.getRepresentation()).toBe('hello, foo!');
         });
     });
 });

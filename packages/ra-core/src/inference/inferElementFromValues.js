@@ -16,19 +16,22 @@ import {
 } from './assertions';
 
 const DefaultComponent = () => <span>;</span>;
-
+const defaultType = {
+    type: DefaultComponent,
+    representation: () => '<DefaultComponent />',
+};
 const defaultTypes = {
-    array: DefaultComponent,
-    boolean: DefaultComponent,
-    date: DefaultComponent,
-    email: DefaultComponent,
-    id: DefaultComponent,
-    number: DefaultComponent,
-    reference: DefaultComponent,
-    referenceArray: DefaultComponent,
-    richText: DefaultComponent,
-    string: DefaultComponent,
-    url: DefaultComponent,
+    array: defaultType,
+    boolean: defaultType,
+    date: defaultType,
+    email: defaultType,
+    id: defaultType,
+    number: defaultType,
+    reference: defaultType,
+    referenceArray: defaultType,
+    richText: defaultType,
+    string: defaultType,
+    url: defaultType,
 };
 
 const hasType = (type, types) => typeof types[type] !== 'undefined';
@@ -73,23 +76,19 @@ const hasType = (type, types) => typeof types[type] !== 'undefined';
  */
 const inferElementFromValues = (name, values = [], types = defaultTypes) => {
     if (name === 'id' && hasType('id', types)) {
-        return InferredElement.create(types.id, name);
+        return new InferredElement(types.id, { source: name });
     }
     if (name.substr(name.length - 3) === '_id' && hasType('reference', types)) {
         const reference = name.substr(0, name.length - 3) + 's';
         return (
             types.reference &&
             new InferredElement(
-                (
-                    <types.reference source={name} reference={reference}>
-                        <types.id source="id" />
-                    </types.reference>
-                ),
-                `<${
-                    types.reference
-                } source="${name}" reference="${reference}"><${
-                    types.id
-                } source="id" />><${types.reference}>`
+                types.reference,
+                {
+                    source: name,
+                    reference: reference,
+                },
+                new InferredElement(types.id, { source: 'id' }),
             )
         );
     }
@@ -101,78 +100,71 @@ const inferElementFromValues = (name, values = [], types = defaultTypes) => {
         return (
             types.referenceArray &&
             new InferredElement(
-                (
-                    <types.referenceArray source={name} reference={reference}>
-                        <types.id source="id" />
-                    </types.referenceArray>
-                ),
-                `<${
-                    types.referenceArray
-                } source="${name}" reference="${reference}"><${
-                    types.id
-                } source="id" />><${types.referenceArray}>`
+                types.referenceArray,
+                {
+                    source: name,
+                    reference: reference,
+                },
+                new InferredElement(types.id, { source: 'id' }),
             )
         );
     }
     if (values.length == 0) {
         // FIXME introspect further using name
-        return InferredElement.create(types.string, name);
+        return new InferredElement(types.string, { source: name });
     }
     if (valuesAreArray(values)) {
         if (isObject(values[0][0]) && hasType('array', types)) {
             const leafValues = getValuesFromRecords(
-                values.reduce((acc, vals) => acc.concat(vals), [])
+                values.reduce((acc, vals) => acc.concat(vals), []),
             );
             // FIXME bad visual representation
             return (
                 types.array &&
                 new InferredElement(
-                    (
-                        <types.array source={name}>
-                            {Object.keys(leafValues).map((leafName, index) =>
-                                cloneElement(
-                                    inferElementFromValues(
-                                        leafName,
-                                        leafValues[leafName],
-                                        types
-                                    ).getElement(),
-                                    { key: index }
-                                )
-                            )}
-                        </types.array>
-                    )
+                    types.array,
+                    {
+                        source: name,
+                    },
+                    Object.keys(leafValues).map((leafName, index) =>
+                        inferElementFromValues(
+                            leafName,
+                            leafValues[leafName],
+                            types,
+                        ),
+                    ),
                 )
             );
         }
         // FIXME introspect further
-        return InferredElement.create(types.string, name);
+        return new InferredElement(types.string, { source: name });
     }
     if (valuesAreBoolean(values) && hasType('boolean', types)) {
-        return InferredElement.create(types.boolean, name);
+        return new InferredElement(types.boolean, { source: name });
     }
     if (valuesAreDate(values) && hasType('date', types)) {
-        return InferredElement.create(types.date, name);
+        return new InferredElement(types.date, { source: name });
     }
     if (valuesAreString(values)) {
         if (name === 'email' && hasType('email', types)) {
-            return InferredElement.create(types.email, name);
+            return new InferredElement(types.email, { source: name });
         }
         if (name === 'url' && hasType('url', types)) {
-            return InferredElement.create(types.url, name);
+            return new InferredElement(types.url, { source: name });
         }
         if (valuesAreDateString(values) && hasType('date', types)) {
-            return InferredElement.create(types.date, name);
+            return new InferredElement(types.date, { source: name });
         }
         if (valuesAreHtml(values) && hasType('richText', types)) {
-            return InferredElement.create(types.richText, name);
+            return new InferredElement(types.richText, { source: name });
         }
-        return InferredElement.create(types.string, name);
+        return new InferredElement(types.string, { source: name });
     }
     if (
         (valuesAreInteger(values) || valuesAreNumeric(values)) &&
         hasType('number', types)
     ) {
-        return InferredElement.create(types.number, name);
+        return new InferredElement(types.number, { source: name });
     }
     if (valuesAreObject(values)) {
         // we need to go deeper
@@ -181,7 +173,7 @@ const inferElementFromValues = (name, values = [], types = defaultTypes) => {
         const leafValues = values.map(v => v[propName]);
         return inferElementFromValues(`${name}.${propName}`, leafValues, types);
     }
-    return InferredElement.create(types.string, name);
+    return new InferredElement(types.string, { source: name });
 };
 
 export default inferElementFromValues;
