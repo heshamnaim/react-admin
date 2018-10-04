@@ -30,8 +30,20 @@ export default {
         component: NumberField,
         representation: props => `<NumberField source="${props.source}" />`,
     },
-    reference: { component: ReferenceField },
-    referenceArray: { component: ReferenceArrayField },
+    reference: {
+        component: ReferenceField,
+        representation: props =>
+            `<ReferenceField source="${props.source}" reference="${
+                props.reference
+            }"><TextField source="id" /></ReferenceField>`,
+    },
+    referenceArray: {
+        component: ReferenceArrayField,
+        representation: props =>
+            `<ReferenceArrayField source="${props.source}" reference="${
+                props.reference
+            }"><TextField source="id" /></ReferenceArrayField>`,
+    },
     richText: false, // never display a rich text field in a datagrid
     string: {
         component: TextField,
