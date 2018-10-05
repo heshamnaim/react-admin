@@ -1,4 +1,4 @@
-import inferElementFromValue from './inferElementFromValue';
+import inferElementFromValues from './inferElementFromValues';
 
 /**
  * Get a list of React-admin field components from a records
@@ -29,8 +29,12 @@ export default (record, types) =>
         .reduce(
             (fields, fieldName) =>
                 fields.concat(
-                    inferElementFromValue(fieldName, record[fieldName], types)
+                    inferElementFromValues(
+                        fieldName,
+                        [record[fieldName]],
+                        types,
+                    ),
                 ),
-            []
+            [],
         )
         .filter(inferredElement => inferredElement.isDefined());
