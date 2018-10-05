@@ -1,4 +1,4 @@
-import React, { Component, Children, cloneElement } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { sanitizeListRestProps } from 'ra-core';
 import { withStyles } from '@material-ui/core/styles';
@@ -76,8 +76,6 @@ const styles = {
  * </ReferenceManyField>
  */
 class Datagrid extends Component {
-    inferredFields = null;
-
     updateSort = event => {
         event.stopPropagation();
         this.props.setSort(event.currentTarget.dataset.sort);
@@ -151,7 +149,7 @@ class Datagrid extends Component {
                                 />
                             </TableCell>
                         )}
-                        {Children.map(
+                        {React.Children.map(
                             children,
                             (field, index) =>
                                 field ? (
@@ -186,11 +184,7 @@ class Datagrid extends Component {
                     selectedIds={selectedIds}
                     version={version}
                 >
-                    {Children.map(children, (field, index) =>
-                        cloneElement(field, {
-                            key: field.props.source || index,
-                        }),
-                    )}
+                    {children}
                 </DatagridBody>
             </Table>
         );
@@ -199,7 +193,7 @@ class Datagrid extends Component {
 
 Datagrid.propTypes = {
     basePath: PropTypes.string,
-    children: PropTypes.node,
+    children: PropTypes.node.isRequired,
     classes: PropTypes.object,
     className: PropTypes.string,
     currentSort: PropTypes.shape({
