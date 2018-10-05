@@ -1,6 +1,6 @@
-import React, { Component, cloneElement } from 'react';
+import React, { Component, Children, cloneElement } from 'react';
 import PropTypes from 'prop-types';
-import { sanitizeListRestProps, getElementsFromRecords } from 'ra-core';
+import { sanitizeListRestProps } from 'ra-core';
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableCell from '@material-ui/core/TableCell';
@@ -12,7 +12,6 @@ import classnames from 'classnames';
 
 import DatagridHeaderCell from './DatagridHeaderCell';
 import DatagridBody from './DatagridBody';
-import datagridFieldTypes from './datagridFieldTypes';
 
 const styles = {
     table: {
@@ -100,31 +99,6 @@ class Datagrid extends Component {
         }
     };
 
-    componentDidUpdate() {
-        const { children, ids, data } = this.props;
-        if (
-            React.Children.count(children) == 0 &&
-            ids.length > 0 &&
-            data &&
-            !this.inferredFields
-        ) {
-            const inferredElements = getElementsFromRecords(
-                ids.map(id => data[id]),
-                datagridFieldTypes,
-            );
-            this.inferredFields = inferredElements.map(inferredElement =>
-                inferredElement.getElement(),
-            );
-            const inferredFieldsRepresentation = inferredElements
-                .map(inferredElement => inferredElement.getRepresentation())
-                .join('\n  ');
-            console.log(`Inferred Datagrid children:
-<Datagrid>
-  ${inferredFieldsRepresentation}
-</Datagrid>`);
-        }
-    }
-
     render() {
         const {
             basePath,
@@ -152,7 +126,7 @@ class Datagrid extends Component {
         if (!isLoading && (ids.length === 0 || total === 0)) {
             return null;
         }
-        const fields = this.inferredFields || React.Children.toArray(children);
+
         return (
             <Table
                 className={classnames(classes.table, className)}
@@ -177,7 +151,8 @@ class Datagrid extends Component {
                                 />
                             </TableCell>
                         )}
-                        {fields.map(
+                        {Children.map(
+                            children,
                             (field, index) =>
                                 field ? (
                                     <DatagridHeaderCell
@@ -211,7 +186,7 @@ class Datagrid extends Component {
                     selectedIds={selectedIds}
                     version={version}
                 >
-                    {fields.map((field, index) =>
+                    {Children.map(children, (field, index) =>
                         cloneElement(field, {
                             key: field.props.source || index,
                         }),

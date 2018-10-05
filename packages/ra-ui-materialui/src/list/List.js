@@ -1,10 +1,15 @@
 /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
-import React from 'react';
+import React, { Component, Children } from 'react';
 import PropTypes from 'prop-types';
 import Card from '@material-ui/core/Card';
 import classnames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
-import { ListController, getListControllerProps } from 'ra-core';
+import {
+    ListController,
+    getListControllerProps,
+    InferredElement,
+    getElementsFromRecords,
+} from 'ra-core';
 
 import Title from '../layout/Title';
 import ListToolbar from './ListToolbar';
@@ -13,6 +18,7 @@ import DefaultBulkActionButtons from '../button/BulkDeleteButton';
 import BulkActionsToolbar from './BulkActionsToolbar';
 import DefaultActions from './ListActions';
 import defaultTheme from '../defaultTheme';
+import listFieldTypes from './listFieldTypes';
 
 const styles = {
     root: {
@@ -95,66 +101,93 @@ const sanitizeRestProps = ({
     ...rest
 }) => rest;
 
-export const ListView = ({
-    // component props
-    actions = <DefaultActions />,
-    aside,
-    filters,
-    bulkActions, // deprecated
-    bulkActionButtons = <DefaultBulkActionButtons />,
-    pagination = <DefaultPagination />,
-    // overridable by user
-    children,
-    className,
-    classes,
-    exporter,
-    title,
-    ...rest
-}) => {
-    const { defaultTitle, version } = rest;
-    const controllerProps = getListControllerProps(rest);
+export class ListView extends Component {
+    componentDidUpdate() {
+        const { children, ids, data } = this.props;
+        if (
+            Children.count(children) == 0 &&
+            ids.length > 0 &&
+            data &&
+            !this.inferredChild
+        ) {
+            const inferredElements = getElementsFromRecords(
+                ids.map(id => data[id]),
+                listFieldTypes,
+            );
+            const inferredChild = new InferredElement(
+                listFieldTypes.table,
+                null,
+                inferredElements,
+            );
 
-    return (
-        <div
-            className={classnames('list-page', classes.root, className)}
-            {...sanitizeRestProps(rest)}
-        >
-            <Title title={title} defaultTitle={defaultTitle} />
-            <Card className={classes.card}>
-                {bulkActions !== false &&
-                    bulkActionButtons !== false &&
-                    bulkActionButtons &&
-                    !bulkActions && (
-                        <BulkActionsToolbar {...controllerProps}>
-                            {bulkActionButtons}
-                        </BulkActionsToolbar>
+            console.log(
+                `Inferred List child: ${inferredChild.getRepresentation()}`,
+            );
+            this.inferredChild = inferredChild.getElement();
+        }
+    }
+
+    render() {
+        const {
+            // component props
+            actions = <DefaultActions />,
+            aside,
+            filters,
+            bulkActions, // deprecated
+            bulkActionButtons = <DefaultBulkActionButtons />,
+            pagination = <DefaultPagination />,
+            // overridable by user
+            children,
+            className,
+            classes,
+            exporter,
+            title,
+            ...rest
+        } = this.props;
+        const { defaultTitle, version } = rest;
+        const controllerProps = getListControllerProps(rest);
+        const child = this.inferredChild || Children.toArray(children).pop();
+        return (
+            <div
+                className={classnames('list-page', classes.root, className)}
+                {...sanitizeRestProps(rest)}
+            >
+                <Title title={title} defaultTitle={defaultTitle} />
+                <Card className={classes.card}>
+                    {bulkActions !== false &&
+                        bulkActionButtons !== false &&
+                        bulkActionButtons &&
+                        !bulkActions && (
+                            <BulkActionsToolbar {...controllerProps}>
+                                {bulkActionButtons}
+                            </BulkActionsToolbar>
+                        )}
+                    {(filters || actions) && (
+                        <ListToolbar
+                            filters={filters}
+                            {...controllerProps}
+                            actions={actions}
+                            bulkActions={bulkActions}
+                            exporter={exporter}
+                        />
                     )}
-                {(filters || actions) && (
-                    <ListToolbar
-                        filters={filters}
-                        {...controllerProps}
-                        actions={actions}
-                        bulkActions={bulkActions}
-                        exporter={exporter}
-                    />
-                )}
-                <div key={version}>
-                    {children &&
-                        React.cloneElement(children, {
-                            ...controllerProps,
-                            hasBulkActions:
-                                bulkActions !== false &&
-                                bulkActionButtons !== false,
-                        })}
-                    {pagination &&
-                        React.cloneElement(pagination, controllerProps)}
-                </div>
-            </Card>
-            {aside && React.cloneElement(aside, controllerProps)}
-        </div>
-    );
-};
-
+                    <div key={version}>
+                        {child &&
+                            React.cloneElement(child, {
+                                ...controllerProps,
+                                hasBulkActions:
+                                    bulkActions !== false &&
+                                    bulkActionButtons !== false,
+                            })}
+                        {pagination &&
+                            React.cloneElement(pagination, controllerProps)}
+                    </div>
+                </Card>
+                {aside && React.cloneElement(aside, controllerProps)}
+            </div>
+        );
+    }
+}
 ListView.propTypes = {
     actions: PropTypes.element,
     aside: PropTypes.node,

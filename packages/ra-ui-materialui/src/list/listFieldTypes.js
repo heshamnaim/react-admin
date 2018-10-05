@@ -1,3 +1,4 @@
+import Datagrid from './Datagrid';
 import ArrayField from '../field//ArrayField';
 import BooleanField from '../field//BooleanField';
 import DateField from '../field//DateField';
@@ -9,6 +10,13 @@ import TextField from '../field//TextField';
 import UrlField from '../field//UrlField';
 
 export default {
+    table: {
+        component: Datagrid,
+        representation: (_, children) => `
+<Datagrid>
+${children.map(child => `  ${child.getRepresentation()}`).join('\n')}
+</Datagrid>`,
+    },
     array: { component: ArrayField },
     boolean: {
         component: BooleanField,
