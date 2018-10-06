@@ -17,9 +17,9 @@ class InferredElement {
                   { ...this.props, ...props },
                   this.children.length > 0
                       ? this.children.map((child, index) =>
-                            child.getElement({ key: index }),
+                            child.getElement({ key: index })
                         )
-                      : this.children.getElement(),
+                      : this.children.getElement()
               )
             : createElement(this.type.component, { ...this.props, ...props });
     }

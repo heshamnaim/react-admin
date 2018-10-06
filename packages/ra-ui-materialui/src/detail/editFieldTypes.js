@@ -46,7 +46,7 @@ ${children.map(child => `  ${child.getRepresentation()}`).join('\n')}
             }">${children.getRepresentation()}</ReferenceInput>`,
     },
     referenceChild: {
-        component: props => <SelectInput optionText="id" {...props} />,
+        component: props => <SelectInput optionText="id" {...props} />, // eslint-disable-line react/display-name
         representation: () => `<SelectInput optionText="id">`,
     },
     referenceArray: {
@@ -57,10 +57,13 @@ ${children.map(child => `  ${child.getRepresentation()}`).join('\n')}
             }"><TextInput source="id" /></ReferenceArrayInput>`,
     },
     referenceArrayChild: {
-        component: props => <SelectInput optionText="id" {...props} />,
+        component: props => <SelectInput optionText="id" {...props} />, // eslint-disable-line react/display-name
         representation: () => `<SelectInput optionText="id">`,
     },
-    richText: false, // never display a rich text Input in a datagrid
+    richText: {
+        component: TextInput,
+        representation: props => `<TextInput source="${props.source}" />`,
+    },
     string: {
         component: TextInput,
         representation: props => `<TextInput source="${props.source}" />`,

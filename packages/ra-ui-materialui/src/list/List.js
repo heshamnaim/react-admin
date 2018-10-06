@@ -112,17 +112,18 @@ export class ListView extends Component {
         ) {
             const inferredElements = getElementsFromRecords(
                 ids.map(id => data[id]),
-                listFieldTypes,
+                listFieldTypes
             );
             const inferredChild = new InferredElement(
                 listFieldTypes.table,
                 null,
-                inferredElements,
+                inferredElements
             );
 
             process.env.NODE_ENV !== 'production' &&
+                // eslint-disable-next-line no-console
                 console.log(
-                    `Inferred List child: ${inferredChild.getRepresentation()}`,
+                    `Inferred List child: ${inferredChild.getRepresentation()}`
                 );
             this.inferredChild = inferredChild.getElement();
         }

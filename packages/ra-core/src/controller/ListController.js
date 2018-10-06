@@ -1,5 +1,5 @@
 /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
-import { Component, Children } from 'react';
+import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { parse, stringify } from 'query-string';
@@ -108,7 +108,7 @@ export class ListController extends Component {
             this.updateData(
                 Object.keys(nextProps.query).length > 0
                     ? nextProps.query
-                    : nextProps.params,
+                    : nextProps.params
             );
         }
         if (nextProps.version !== this.props.version) {
@@ -172,7 +172,7 @@ export class ListController extends Component {
             this.props.resource,
             pagination,
             { field: sort, order },
-            { ...filter, ...permanentFilter },
+            { ...filter, ...permanentFilter }
         );
     }
 
@@ -400,7 +400,7 @@ const selectQuery = createSelector(
     (path, search) => {
         const query = pickBy(
             parse(search),
-            (v, k) => validQueryParams.indexOf(k) !== -1,
+            (v, k) => validQueryParams.indexOf(k) !== -1
         );
         if (query.filter && typeof query.filter === 'string') {
             try {
@@ -410,7 +410,7 @@ const selectQuery = createSelector(
             }
         }
         return query;
-    },
+    }
 );
 
 function mapStateToProps(state, props) {
@@ -438,7 +438,7 @@ export default compose(
             setSelectedIds: setListSelectedIdsAction,
             toggleItem: toggleListItemAction,
             push: pushAction,
-        },
+        }
     ),
-    translate,
+    translate
 )(ListController);

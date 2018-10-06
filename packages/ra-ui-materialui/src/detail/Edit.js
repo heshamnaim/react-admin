@@ -59,17 +59,18 @@ export class EditView extends Component {
         if (Children.count(children) == 0 && record && !this.inferredChild) {
             const inferredElements = getElementsFromRecords(
                 [record],
-                editFieldTypes,
+                editFieldTypes
             );
             const inferredChild = new InferredElement(
                 editFieldTypes.form,
                 null,
-                inferredElements,
+                inferredElements
             );
 
             process.env.NODE_ENV !== 'production' &&
+                // eslint-disable-next-line no-console
                 console.log(
-                    `Inferred Edit child: ${inferredChild.getRepresentation()}`,
+                    `Inferred Edit child: ${inferredChild.getRepresentation()}`
                 );
             this.inferredChild = inferredChild.getElement();
         }

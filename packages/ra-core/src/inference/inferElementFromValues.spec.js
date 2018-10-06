@@ -12,7 +12,7 @@ describe('inferElementFromValues', () => {
             string: { component: Good },
         };
         expect(inferElementFromValues('id', ['foo'], types)).toBeInstanceOf(
-            InferredElement,
+            InferredElement
         );
     });
     it('should fall back to the nearest type if type is absent', () => {
@@ -20,7 +20,7 @@ describe('inferElementFromValues', () => {
             string: { component: Good },
         };
         expect(
-            inferElementFromValues('id', ['foo'], types).getElement(),
+            inferElementFromValues('id', ['foo'], types).getElement()
         ).toEqual(<Good source="id" />);
     });
     it('should return null if type is falsy', () => {
@@ -29,7 +29,7 @@ describe('inferElementFromValues', () => {
             string: { component: Bad },
         };
         expect(
-            inferElementFromValues('id', ['foo'], types).getElement(),
+            inferElementFromValues('id', ['foo'], types).getElement()
         ).toBeUndefined();
     });
     it('should return an id field for field named id', () => {
@@ -38,7 +38,7 @@ describe('inferElementFromValues', () => {
             string: { component: Bad },
         };
         expect(
-            inferElementFromValues('id', ['foo', 'bar'], types).getElement(),
+            inferElementFromValues('id', ['foo', 'bar'], types).getElement()
         ).toEqual(<Good source="id" />);
     });
     it('should return a reference field for field named *_id', () => {
@@ -48,15 +48,11 @@ describe('inferElementFromValues', () => {
             id: { component: Dummy },
         };
         expect(
-            inferElementFromValues(
-                'foo_id',
-                ['foo', 'bar'],
-                types,
-            ).getElement(),
+            inferElementFromValues('foo_id', ['foo', 'bar'], types).getElement()
         ).toEqual(
             <Good source="foo_id" reference="foos">
                 <Dummy source="id" />
-            </Good>,
+            </Good>
         );
     });
     it('should return a reference array field for field named *_ids', () => {
@@ -69,12 +65,12 @@ describe('inferElementFromValues', () => {
             inferElementFromValues(
                 'foo_ids',
                 ['foo', 'bar'],
-                types,
-            ).getElement(),
+                types
+            ).getElement()
         ).toEqual(
             <Good source="foo_ids" reference="foos">
                 <Dummy source="id" />
-            </Good>,
+            </Good>
         );
     });
     it('should return a string field for no values', () => {
@@ -83,7 +79,7 @@ describe('inferElementFromValues', () => {
             number: { component: Bad },
         };
         expect(inferElementFromValues('foo', [], types).getElement()).toEqual(
-            <Good source="foo" />,
+            <Good source="foo" />
         );
     });
     it('should return an array field for array of object values', () => {
@@ -96,8 +92,8 @@ describe('inferElementFromValues', () => {
             inferElementFromValues(
                 'foo',
                 [[{ bar: 1 }, { bar: 2 }], [{ bar: 3 }, { bar: 4 }]],
-                types,
-            ).getElement(),
+                types
+            ).getElement()
         ).toEqual(<Good source="foo">{[<Dummy key="0" source="bar" />]}</Good>);
     });
     it('should return a string field for array of non-object values', () => {
@@ -106,7 +102,7 @@ describe('inferElementFromValues', () => {
             string: { component: Good },
         };
         expect(
-            inferElementFromValues('foo', [[1, 2], [3, 4]], types).getElement(),
+            inferElementFromValues('foo', [[1, 2], [3, 4]], types).getElement()
         ).toEqual(<Good source="foo" />);
     });
     it('should return a boolean field for boolean values', () => {
@@ -118,8 +114,8 @@ describe('inferElementFromValues', () => {
             inferElementFromValues(
                 'foo',
                 [true, false, true],
-                types,
-            ).getElement(),
+                types
+            ).getElement()
         ).toEqual(<Good source="foo" />);
     });
     it('should return a date field for date values', () => {
@@ -131,8 +127,8 @@ describe('inferElementFromValues', () => {
             inferElementFromValues(
                 'foo',
                 [new Date('2018-10-01'), new Date('2018-12-03')],
-                types,
-            ).getElement(),
+                types
+            ).getElement()
         ).toEqual(<Good source="foo" />);
     });
     it('should return an email field for email name', () => {
@@ -141,7 +137,7 @@ describe('inferElementFromValues', () => {
             string: { component: Bad },
         };
         expect(
-            inferElementFromValues('email', ['whatever'], types).getElement(),
+            inferElementFromValues('email', ['whatever'], types).getElement()
         ).toEqual(<Good source="email" />);
     });
     it.skip('should return an email field for email string values', () => {
@@ -153,8 +149,8 @@ describe('inferElementFromValues', () => {
             inferElementFromValues(
                 'foo',
                 ['me@example.com', 'you@foo.co.uk'],
-                types,
-            ).getElement(),
+                types
+            ).getElement()
         ).toEqual(<Good source="foo" />);
     });
     it('should return an url field for url name', () => {
@@ -166,8 +162,8 @@ describe('inferElementFromValues', () => {
             inferElementFromValues(
                 'url',
                 ['whatever', 'whatever'],
-                types,
-            ).getElement(),
+                types
+            ).getElement()
         ).toEqual(<Good source="url" />);
     });
     it.skip('should return an url field for url string values', () => {
@@ -179,8 +175,8 @@ describe('inferElementFromValues', () => {
             inferElementFromValues(
                 'foo',
                 ['http://foo.com/bar', 'https://www.foo.com/index.html#foo'],
-                types,
-            ).getElement(),
+                types
+            ).getElement()
         ).toEqual(<Good source="foo" />);
     });
     it('should return a date field for date string values', () => {
@@ -192,8 +188,8 @@ describe('inferElementFromValues', () => {
             inferElementFromValues(
                 'foo',
                 ['2018-10-01', '2018-12-03'],
-                types,
-            ).getElement(),
+                types
+            ).getElement()
         ).toEqual(<Good source="foo" />);
     });
     it('should return a rich text field for HTML values', () => {
@@ -205,8 +201,8 @@ describe('inferElementFromValues', () => {
             inferElementFromValues(
                 'foo',
                 ['This is <h1>Good</h1>', '<body><h1>hello</h1>World</body>'],
-                types,
-            ).getElement(),
+                types
+            ).getElement()
         ).toEqual(<Good source="foo" />);
     });
     it('should return a string field for string values', () => {
@@ -218,8 +214,8 @@ describe('inferElementFromValues', () => {
             inferElementFromValues(
                 'foo',
                 ['This is Good', 'hello, World!'],
-                types,
-            ).getElement(),
+                types
+            ).getElement()
         ).toEqual(<Good source="foo" />);
     });
     it('should return a number field for number values', () => {
@@ -231,8 +227,8 @@ describe('inferElementFromValues', () => {
             inferElementFromValues(
                 'foo',
                 [12, 1e23, 653.56],
-                types,
-            ).getElement(),
+                types
+            ).getElement()
         ).toEqual(<Good source="foo" />);
     });
     it('should return a typed field for object values', () => {
@@ -244,8 +240,8 @@ describe('inferElementFromValues', () => {
             inferElementFromValues(
                 'foo',
                 [{ bar: 1, baz: 2 }, { bar: 3, baz: 4 }],
-                types,
-            ).getElement(),
+                types
+            ).getElement()
         ).toEqual(<Good source="foo.bar" />);
     });
 });

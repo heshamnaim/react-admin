@@ -1,4 +1,3 @@
-import React, { Component } from 'react';
 import InferredElement from './InferredElement';
 
 describe('InferredElement', () => {
@@ -12,7 +11,7 @@ describe('InferredElement', () => {
             const dummyType = { component: DummyComponent };
             const ie = new InferredElement(dummyType, { source: 'foo' });
             expect(ie.getRepresentation()).toBe(
-                '<DummyComponent source="foo" />',
+                '<DummyComponent source="foo" />'
             );
         });
         it('should return a representation based on the representation type property', () => {

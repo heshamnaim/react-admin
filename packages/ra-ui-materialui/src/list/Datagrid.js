@@ -89,8 +89,8 @@ class Datagrid extends Component {
                     (idList, id) =>
                         idList.includes(id) ? idList : idList.concat(id),
 
-                    selectedIds,
-                ),
+                    selectedIds
+                )
             );
         } else {
             onSelect([]);
@@ -141,8 +141,7 @@ class Datagrid extends Component {
                                         selectedIds.length > 0 &&
                                         ids.length > 0 &&
                                         !ids.find(
-                                            it =>
-                                                selectedIds.indexOf(it) === -1,
+                                            it => selectedIds.indexOf(it) === -1
                                         )
                                     }
                                     onChange={this.handleSelectAll}
@@ -165,7 +164,7 @@ class Datagrid extends Component {
                                         resource={resource}
                                         updateSort={this.updateSort}
                                     />
-                                ) : null,
+                                ) : null
                         )}
                     </TableRow>
                 </TableHead>

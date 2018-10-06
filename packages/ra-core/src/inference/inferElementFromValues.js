@@ -1,4 +1,4 @@
-import React, { cloneElement } from 'react';
+import React from 'react';
 import getValuesFromRecords from './getValuesFromRecords';
 import InferredElement from './InferredElement';
 
@@ -88,7 +88,7 @@ const inferElementFromValues = (name, values = [], types = defaultTypes) => {
                     source: name,
                     reference: reference,
                 },
-                new InferredElement(types.referenceChild),
+                new InferredElement(types.referenceChild)
             )
         );
     }
@@ -105,7 +105,7 @@ const inferElementFromValues = (name, values = [], types = defaultTypes) => {
                     source: name,
                     reference: reference,
                 },
-                new InferredElement(types.referenceArrayChild),
+                new InferredElement(types.referenceArrayChild)
             )
         );
     }
@@ -116,7 +116,7 @@ const inferElementFromValues = (name, values = [], types = defaultTypes) => {
     if (valuesAreArray(values)) {
         if (isObject(values[0][0]) && hasType('array', types)) {
             const leafValues = getValuesFromRecords(
-                values.reduce((acc, vals) => acc.concat(vals), []),
+                values.reduce((acc, vals) => acc.concat(vals), [])
             );
             // FIXME bad visual representation
             return (
@@ -126,13 +126,13 @@ const inferElementFromValues = (name, values = [], types = defaultTypes) => {
                     {
                         source: name,
                     },
-                    Object.keys(leafValues).map((leafName, index) =>
+                    Object.keys(leafValues).map(leafName =>
                         inferElementFromValues(
                             leafName,
                             leafValues[leafName],
-                            types,
-                        ),
-                    ),
+                            types
+                        )
+                    )
                 )
             );
         }

@@ -12,7 +12,7 @@ import UrlField from '../field/UrlField';
 
 export default {
     table: {
-        component: props => <Datagrid rowClick="edit" {...props} />,
+        component: props => <Datagrid rowClick="edit" {...props} />, // eslint-disable-line react/display-name
         representation: (_, children) => `
 <Datagrid rowClick="edit">
 ${children.map(child => `  ${child.getRepresentation()}`).join('\n')}
@@ -47,7 +47,7 @@ ${children.map(child => `  ${child.getRepresentation()}`).join('\n')}
             }"><TextField source="id" /></ReferenceField>`,
     },
     referenceChild: {
-        component: props => <TextField source="id" {...props} />,
+        component: props => <TextField source="id" {...props} />, // eslint-disable-line react/display-name
         representation: () => `<TextField source="id" />`,
     },
     referenceArray: {
@@ -58,7 +58,7 @@ ${children.map(child => `  ${child.getRepresentation()}`).join('\n')}
             }"><TextField source="id" /></ReferenceArrayField>`,
     },
     referenceArrayChild: {
-        component: props => <TextField source="id" {...props} />,
+        component: props => <TextField source="id" {...props} />, // eslint-disable-line react/display-name
         representation: () => `<TextField source="id" />`,
     },
     richText: false, // never display a rich text field in a datagrid
