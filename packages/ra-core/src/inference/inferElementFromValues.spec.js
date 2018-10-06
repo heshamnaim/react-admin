@@ -51,7 +51,7 @@ describe('inferElementFromValues', () => {
             inferElementFromValues('foo_id', ['foo', 'bar'], types).getElement()
         ).toEqual(
             <Good source="foo_id" reference="foos">
-                <Dummy source="id" />
+                <Dummy />
             </Good>
         );
     });
@@ -69,7 +69,7 @@ describe('inferElementFromValues', () => {
             ).getElement()
         ).toEqual(
             <Good source="foo_ids" reference="foos">
-                <Dummy source="id" />
+                <Dummy />
             </Good>
         );
     });
