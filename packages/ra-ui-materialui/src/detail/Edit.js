@@ -67,9 +67,10 @@ export class EditView extends Component {
                 inferredElements,
             );
 
-            console.log(
-                `Inferred Edit child: ${inferredChild.getRepresentation()}`,
-            );
+            process.env.NODE_ENV !== 'production' &&
+                console.log(
+                    `Inferred Edit child: ${inferredChild.getRepresentation()}`,
+                );
             this.inferredChild = inferredChild.getElement();
         }
     }

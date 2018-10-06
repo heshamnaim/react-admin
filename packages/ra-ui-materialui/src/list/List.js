@@ -120,9 +120,10 @@ export class ListView extends Component {
                 inferredElements,
             );
 
-            console.log(
-                `Inferred List child: ${inferredChild.getRepresentation()}`,
-            );
+            process.env.NODE_ENV !== 'production' &&
+                console.log(
+                    `Inferred List child: ${inferredChild.getRepresentation()}`,
+                );
             this.inferredChild = inferredChild.getElement();
         }
     }
