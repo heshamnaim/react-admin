@@ -1,14 +1,19 @@
-import React from 'react';
+import React, { Component, Children } from 'react';
 import PropTypes from 'prop-types';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import { withStyles } from '@material-ui/core/styles';
 import classnames from 'classnames';
-import { EditController } from 'ra-core';
+import {
+    EditController,
+    InferredElement,
+    getElementsFromRecords,
+} from 'ra-core';
 
 import DefaultActions from './EditActions';
 import TitleForRecord from '../layout/TitleForRecord';
 import CardContentInner from '../layout/CardContentInner';
+import editFieldTypes from './editFieldTypes';
 
 const styles = {
     root: {
@@ -48,75 +53,105 @@ const sanitizeRestProps = ({
     ...rest
 }) => rest;
 
-export const EditView = ({
-    actions,
-    aside,
-    basePath,
-    children,
-    classes,
-    className,
-    defaultTitle,
-    hasList,
-    hasShow,
-    record,
-    redirect,
-    resource,
-    save,
-    title,
-    version,
-    ...rest
-}) => {
-    if (typeof actions === 'undefined' && hasShow) {
-        actions = <DefaultActions />;
+export class EditView extends Component {
+    componentDidUpdate() {
+        const { children, record } = this.props;
+        if (Children.count(children) == 0 && record && !this.inferredChild) {
+            const inferredElements = getElementsFromRecords(
+                [record],
+                editFieldTypes,
+            );
+            const inferredChild = new InferredElement(
+                editFieldTypes.form,
+                null,
+                inferredElements,
+            );
+
+            console.log(
+                `Inferred Edit child: ${inferredChild.getRepresentation()}`,
+            );
+            this.inferredChild = inferredChild.getElement();
+        }
     }
-    return (
-        <div
-            className={classnames('edit-page', classes.root, className)}
-            {...sanitizeRestProps(rest)}
-        >
-            <TitleForRecord
-                title={title}
-                record={record}
-                defaultTitle={defaultTitle}
-            />
-            <Card className={classes.card}>
-                {actions && (
-                    <CardContentInner>
-                        {React.cloneElement(actions, {
+
+    render() {
+        const {
+            actions,
+            aside,
+            basePath,
+            children,
+            classes,
+            className,
+            defaultTitle,
+            hasList,
+            hasShow,
+            record,
+            redirect,
+            resource,
+            save,
+            title,
+            version,
+            ...rest
+        } = this.props;
+        const actionsElement =
+            typeof actions === 'undefined' && hasShow ? (
+                <DefaultActions />
+            ) : (
+                actions
+            );
+        const child = this.inferredChild || Children.toArray(children).pop();
+        if (!child) {
+            return null;
+        }
+        return (
+            <div
+                className={classnames('edit-page', classes.root, className)}
+                {...sanitizeRestProps(rest)}
+            >
+                <TitleForRecord
+                    title={title}
+                    record={record}
+                    defaultTitle={defaultTitle}
+                />
+                <Card className={classes.card}>
+                    {actions && (
+                        <CardContentInner>
+                            {React.cloneElement(actionsElement, {
+                                basePath,
+                                data: record,
+                                hasShow,
+                                hasList,
+                                resource,
+                            })}
+                        </CardContentInner>
+                    )}
+                    {record ? (
+                        React.cloneElement(child, {
                             basePath,
-                            data: record,
-                            hasShow,
-                            hasList,
+                            record,
+                            redirect:
+                                typeof child.props.redirect === 'undefined'
+                                    ? redirect
+                                    : child.props.redirect,
                             resource,
-                        })}
-                    </CardContentInner>
-                )}
-                {record ? (
-                    React.cloneElement(children, {
+                            save,
+                            version,
+                        })
+                    ) : (
+                        <CardContent>&nbsp;</CardContent>
+                    )}
+                </Card>
+                {aside &&
+                    React.cloneElement(aside, {
                         basePath,
                         record,
-                        redirect:
-                            typeof children.props.redirect === 'undefined'
-                                ? redirect
-                                : children.props.redirect,
                         resource,
-                        save,
                         version,
-                    })
-                ) : (
-                    <CardContent>&nbsp;</CardContent>
-                )}
-            </Card>
-            {aside &&
-                React.cloneElement(aside, {
-                    basePath,
-                    record,
-                    resource,
-                    version,
-                })}
-        </div>
-    );
-};
+                    })}
+            </div>
+        );
+    }
+}
 
 EditView.propTypes = {
     actions: PropTypes.element,
