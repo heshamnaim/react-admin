@@ -1,3 +1,4 @@
+import React from 'react';
 import SimpleForm from '../form/SimpleForm';
 import ArrayInput from '../input/ArrayInput';
 import BooleanInput from '../input/BooleanInput';
@@ -5,6 +6,7 @@ import DateInput from '../input/DateInput';
 import NumberInput from '../input/NumberInput';
 import ReferenceInput from '../input/ReferenceInput';
 import ReferenceArrayInput from '../input/ReferenceArrayInput';
+import SelectInput from '../input/SelectInput';
 import TextInput from '../input/TextInput';
 
 export default {
@@ -38,10 +40,14 @@ ${children.map(child => `  ${child.getRepresentation()}`).join('\n')}
     },
     reference: {
         component: ReferenceInput,
-        representation: props =>
+        representation: (props, children) =>
             `<ReferenceInput source="${props.source}" reference="${
                 props.reference
-            }"><TextInput source="id" /></ReferenceInput>`,
+            }">${children.getRepresentation()}</ReferenceInput>`,
+    },
+    referenceChild: {
+        component: props => <SelectInput optionText="id" {...props} />,
+        representation: () => `<SelectInput optionText="id">`,
     },
     referenceArray: {
         component: ReferenceArrayInput,
@@ -49,6 +55,10 @@ ${children.map(child => `  ${child.getRepresentation()}`).join('\n')}
             `<ReferenceArrayInput source="${props.source}" reference="${
                 props.reference
             }"><TextInput source="id" /></ReferenceArrayInput>`,
+    },
+    referenceArrayChild: {
+        component: props => <SelectInput optionText="id" {...props} />,
+        representation: () => `<SelectInput optionText="id">`,
     },
     richText: false, // never display a rich text Input in a datagrid
     string: {

@@ -88,7 +88,7 @@ const inferElementFromValues = (name, values = [], types = defaultTypes) => {
                     source: name,
                     reference: reference,
                 },
-                new InferredElement(types.id, { source: 'id' }),
+                new InferredElement(types.referenceChild),
             )
         );
     }
@@ -105,7 +105,7 @@ const inferElementFromValues = (name, values = [], types = defaultTypes) => {
                     source: name,
                     reference: reference,
                 },
-                new InferredElement(types.id, { source: 'id' }),
+                new InferredElement(types.referenceArrayChild),
             )
         );
     }

@@ -46,12 +46,20 @@ ${children.map(child => `  ${child.getRepresentation()}`).join('\n')}
                 props.reference
             }"><TextField source="id" /></ReferenceField>`,
     },
+    referenceChild: {
+        component: props => <TextField source="id" {...props} />,
+        representation: () => `<TextField source="id" />`,
+    },
     referenceArray: {
         component: ReferenceArrayField,
         representation: props =>
             `<ReferenceArrayField source="${props.source}" reference="${
                 props.reference
             }"><TextField source="id" /></ReferenceArrayField>`,
+    },
+    referenceArrayChild: {
+        component: props => <TextField source="id" {...props} />,
+        representation: () => `<TextField source="id" />`,
     },
     richText: false, // never display a rich text field in a datagrid
     string: {
