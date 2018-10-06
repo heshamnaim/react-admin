@@ -45,7 +45,7 @@ describe('inferElementFromValues', () => {
         const types = {
             reference: { component: Good },
             string: { component: Bad },
-            id: { component: Dummy },
+            referenceChild: { component: Dummy },
         };
         expect(
             inferElementFromValues('foo_id', ['foo', 'bar'], types).getElement()
@@ -59,7 +59,7 @@ describe('inferElementFromValues', () => {
         const types = {
             referenceArray: { component: Good },
             string: { component: Bad },
-            id: { component: Dummy },
+            referenceArrayChild: { component: Dummy },
         };
         expect(
             inferElementFromValues(
