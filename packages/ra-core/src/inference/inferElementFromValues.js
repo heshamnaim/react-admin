@@ -1,4 +1,6 @@
 import React from 'react';
+import inflection from 'inflection';
+
 import getValuesFromRecords from './getValuesFromRecords';
 import InferredElement from './InferredElement';
 
@@ -79,7 +81,7 @@ const inferElementFromValues = (name, values = [], types = defaultTypes) => {
         return new InferredElement(types.id, { source: name });
     }
     if (name.substr(name.length - 3) === '_id' && hasType('reference', types)) {
-        const reference = name.substr(0, name.length - 3) + 's';
+        const reference = inflection.pluralize(name.substr(0, name.length - 3));
         return (
             types.reference &&
             new InferredElement(
@@ -96,7 +98,9 @@ const inferElementFromValues = (name, values = [], types = defaultTypes) => {
         name.substr(name.length - 4) === '_ids' &&
         hasType('referenceArray', types)
     ) {
-        const reference = name.substr(0, name.length - 4) + 's';
+        const reference = inflection.pluralize(
+            name.substr(0, name.length - 4) + 's'
+        );
         return (
             types.referenceArray &&
             new InferredElement(
