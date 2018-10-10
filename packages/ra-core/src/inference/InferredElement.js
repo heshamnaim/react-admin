@@ -24,6 +24,10 @@ class InferredElement {
             : createElement(this.type.component, { ...this.props, ...props });
     }
 
+    getProps() {
+        return this.props;
+    }
+
     isDefined() {
         return !!this.type;
     }

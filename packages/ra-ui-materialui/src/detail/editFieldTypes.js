@@ -1,5 +1,6 @@
 import React from 'react';
 import SimpleForm from '../form/SimpleForm';
+import SimpleFormIterator from '../form/SimpleFormIterator';
 import ArrayInput from '../input/ArrayInput';
 import BooleanInput from '../input/BooleanInput';
 import DateInput from '../input/DateInput';
@@ -17,7 +18,20 @@ export default {
 ${children.map(child => `  ${child.getRepresentation()}`).join('\n')}
 </SimpleForm>`,
     },
-    array: { component: ArrayInput },
+    array: {
+        // eslint-disable-next-line react/display-name
+        component: ({ source, children }) => (
+            <ArrayInput source={source}>
+                <SimpleFormIterator>{children}</SimpleFormIterator>
+            </ArrayInput>
+        ),
+        representation: (props, children) =>
+            `<ArrayInput source="${
+                props.source
+            }"><SimpleFormIterator>${children
+                .map(child => child.getRepresentation())
+                .join('\n')}</SimpleFormIterator></ArrayInput>`,
+    },
     boolean: {
         component: BooleanInput,
         representation: props => `<BooleanInput source="${props.source}" />`,

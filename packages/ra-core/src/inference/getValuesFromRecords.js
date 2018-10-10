@@ -31,7 +31,10 @@ export default records =>
                 values[fieldName] = [];
             }
             if (record[fieldName] != null) {
-                values[fieldName] = values[fieldName].concat(record[fieldName]);
+                const value = Array.isArray(record[fieldName])
+                    ? [record[fieldName]]
+                    : record[fieldName];
+                values[fieldName] = values[fieldName].concat(value);
             }
         });
         return values;

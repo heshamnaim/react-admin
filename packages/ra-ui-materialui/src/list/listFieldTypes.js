@@ -1,7 +1,9 @@
 import React from 'react';
 import Datagrid from './Datagrid';
+import SingleFieldList from './SingleFieldList';
 import ArrayField from '../field/ArrayField';
 import BooleanField from '../field/BooleanField';
+import ChipField from '../field/ChipField';
 import DateField from '../field/DateField';
 import EmailField from '../field/EmailField';
 import NumberField from '../field/NumberField';
@@ -18,7 +20,24 @@ export default {
 ${children.map(child => `  ${child.getRepresentation()}`).join('\n')}
 </Datagrid>`,
     },
-    array: { component: ArrayField },
+    array: {
+        // eslint-disable-next-line react/display-name
+        component: ({ source, children }) => (
+            <ArrayField source={source}>
+                <SingleFieldList>
+                    <ChipField
+                        source={children.length > 0 && children[0].props.source}
+                    />
+                </SingleFieldList>
+            </ArrayField>
+        ),
+        representation: (props, children) =>
+            `<ArrayField source="${
+                props.source
+            }"><SingleFieldList><ChipField source="${children.length > 0 &&
+                children[0].getProps()
+                    .source}" /></SingleFieldList></ArrayField>`,
+    },
     boolean: {
         component: BooleanField,
         representation: props => `<BooleanField source="${props.source}" />`,
