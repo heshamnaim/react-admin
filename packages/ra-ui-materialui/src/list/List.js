@@ -18,7 +18,6 @@ import DefaultBulkActionButtons from '../button/BulkDeleteButton';
 import BulkActionsToolbar from './BulkActionsToolbar';
 import DefaultActions from './ListActions';
 import defaultTheme from '../defaultTheme';
-import listFieldTypes from './listFieldTypes';
 
 const styles = {
     root: {
@@ -102,30 +101,35 @@ const sanitizeRestProps = ({
 }) => rest;
 
 export class ListView extends Component {
+    state = {
+        inferredChild: null,
+    };
     componentDidUpdate() {
         const { children, ids, data } = this.props;
         if (
             Children.count(children) == 0 &&
             ids.length > 0 &&
             data &&
-            !this.inferredChild
+            !this.state.inferredChild
         ) {
-            const inferredElements = getElementsFromRecords(
-                ids.map(id => data[id]),
-                listFieldTypes
-            );
-            const inferredChild = new InferredElement(
-                listFieldTypes.table,
-                null,
-                inferredElements
-            );
-
-            process.env.NODE_ENV !== 'production' &&
-                // eslint-disable-next-line no-console
-                console.log(
-                    `Inferred List child: ${inferredChild.getRepresentation()}`
+            import('./listFieldTypes').then(({ default: listFieldTypes }) => {
+                const inferredElements = getElementsFromRecords(
+                    ids.map(id => data[id]),
+                    listFieldTypes
                 );
-            this.inferredChild = inferredChild.getElement();
+                const inferredChild = new InferredElement(
+                    listFieldTypes.table,
+                    null,
+                    inferredElements
+                );
+
+                process.env.NODE_ENV !== 'production' &&
+                    // eslint-disable-next-line no-console
+                    console.log(
+                        `Inferred List child: ${inferredChild.getRepresentation()}`
+                    );
+                this.setState({ inferredChild: inferredChild.getElement() });
+            });
         }
     }
 
@@ -148,7 +152,8 @@ export class ListView extends Component {
         } = this.props;
         const { defaultTitle, version } = rest;
         const controllerProps = getListControllerProps(rest);
-        const child = this.inferredChild || Children.toArray(children).pop();
+        const child =
+            this.state.inferredChild || Children.toArray(children).pop();
         return (
             <div
                 className={classnames('list-page', classes.root, className)}

@@ -12,7 +12,6 @@ import {
 import DefaultActions from './ShowActions';
 import TitleForRecord from '../layout/TitleForRecord';
 import CardContentInner from '../layout/CardContentInner';
-import showFieldTypes from './showFieldTypes';
 
 const styles = {
     root: {
@@ -50,25 +49,34 @@ const sanitizeRestProps = ({
 }) => rest;
 
 export class ShowView extends Component {
+    state = {
+        inferredChild: null,
+    };
     componentDidUpdate() {
         const { children, record } = this.props;
-        if (Children.count(children) == 0 && record && !this.inferredChild) {
-            const inferredElements = getElementsFromRecords(
-                [record],
-                showFieldTypes
-            );
-            const inferredChild = new InferredElement(
-                showFieldTypes.show,
-                null,
-                inferredElements
-            );
-
-            process.env.NODE_ENV !== 'production' &&
-                // eslint-disable-next-line no-console
-                console.log(
-                    `Inferred Edit child: ${inferredChild.getRepresentation()}`
+        if (
+            Children.count(children) == 0 &&
+            record &&
+            !this.state.inferredChild
+        ) {
+            import('./showFieldTypes').then(showFieldTypes => {
+                const inferredElements = getElementsFromRecords(
+                    [record],
+                    showFieldTypes
                 );
-            this.inferredChild = inferredChild.getElement();
+                const inferredChild = new InferredElement(
+                    showFieldTypes.show,
+                    null,
+                    inferredElements
+                );
+
+                process.env.NODE_ENV !== 'production' &&
+                    // eslint-disable-next-line no-console
+                    console.log(
+                        `Inferred Edit child: ${inferredChild.getRepresentation()}`
+                    );
+                this.setState({ inferredChild: inferredChild.getElement() });
+            });
         }
     }
     render() {
@@ -95,7 +103,8 @@ export class ShowView extends Component {
             ) : (
                 actions
             );
-        const child = this.inferredChild || Children.toArray(children).pop();
+        const child =
+            this.state.inferredChild || Children.toArray(children).pop();
         if (!child) {
             return null;
         }

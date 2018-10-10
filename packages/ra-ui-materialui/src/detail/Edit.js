@@ -13,7 +13,6 @@ import {
 import DefaultActions from './EditActions';
 import TitleForRecord from '../layout/TitleForRecord';
 import CardContentInner from '../layout/CardContentInner';
-import editFieldTypes from './editFieldTypes';
 
 const styles = {
     root: {
@@ -54,25 +53,34 @@ const sanitizeRestProps = ({
 }) => rest;
 
 export class EditView extends Component {
+    state = {
+        inferredChild: null,
+    };
     componentDidUpdate() {
         const { children, record } = this.props;
-        if (Children.count(children) == 0 && record && !this.inferredChild) {
-            const inferredElements = getElementsFromRecords(
-                [record],
-                editFieldTypes
-            );
-            const inferredChild = new InferredElement(
-                editFieldTypes.form,
-                null,
-                inferredElements
-            );
-
-            process.env.NODE_ENV !== 'production' &&
-                // eslint-disable-next-line no-console
-                console.log(
-                    `Inferred Edit child: ${inferredChild.getRepresentation()}`
+        if (
+            Children.count(children) == 0 &&
+            record &&
+            !this.state.inferredChild
+        ) {
+            import('./editFieldTypes').then(editFieldTypes => {
+                const inferredElements = getElementsFromRecords(
+                    [record],
+                    editFieldTypes
                 );
-            this.inferredChild = inferredChild.getElement();
+                const inferredChild = new InferredElement(
+                    editFieldTypes.form,
+                    null,
+                    inferredElements
+                );
+
+                process.env.NODE_ENV !== 'production' &&
+                    // eslint-disable-next-line no-console
+                    console.log(
+                        `Inferred Edit child: ${inferredChild.getRepresentation()}`
+                    );
+                this.setState({ inferredChild: inferredChild.getElement() });
+            });
         }
     }
 
@@ -101,7 +109,8 @@ export class EditView extends Component {
             ) : (
                 actions
             );
-        const child = this.inferredChild || Children.toArray(children).pop();
+        const child =
+            this.state.inferredChild || Children.toArray(children).pop();
         if (!child) {
             return null;
         }
