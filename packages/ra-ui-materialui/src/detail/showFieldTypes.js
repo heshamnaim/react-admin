@@ -1,42 +1,36 @@
 import React from 'react';
-import Datagrid from './Datagrid';
-import SingleFieldList from './SingleFieldList';
+import Datagrid from '../list/Datagrid';
 import ArrayField from '../field/ArrayField';
 import BooleanField from '../field/BooleanField';
-import ChipField from '../field/ChipField';
 import DateField from '../field/DateField';
 import EmailField from '../field/EmailField';
 import NumberField from '../field/NumberField';
 import ReferenceField from '../field/ReferenceField';
 import ReferenceArrayField from '../field/ReferenceArrayField';
+import RichTextField from '../field/RichTextField';
+import SimpleShowLayout from './SimpleShowLayout';
 import TextField from '../field/TextField';
 import UrlField from '../field/UrlField';
 
 export default {
-    table: {
-        component: props => <Datagrid rowClick="edit" {...props} />, // eslint-disable-line react/display-name
+    show: {
+        component: props => <SimpleShowLayout {...props} />, // eslint-disable-line react/display-name
         representation: (_, children) => `
-<Datagrid rowClick="edit">
+<SimpleShowLayout>
 ${children.map(child => `  ${child.getRepresentation()}`).join('\n')}
-</Datagrid>`,
+</SimpleShowLayout>`,
     },
     array: {
         // eslint-disable-next-line react/display-name
         component: ({ children, ...props }) => (
             <ArrayField {...props}>
-                <SingleFieldList>
-                    <ChipField
-                        source={children.length > 0 && children[0].props.source}
-                    />
-                </SingleFieldList>
+                <Datagrid>{children}</Datagrid>
             </ArrayField>
         ),
         representation: (props, children) =>
-            `<ArrayField source="${
-                props.source
-            }"><SingleFieldList><ChipField source="${children.length > 0 &&
-                children[0].getProps()
-                    .source}" /></SingleFieldList></ArrayField>`,
+            `<ArrayField source="${props.source}"><Datagrid>${children
+                .map(child => child.getRepresentation())
+                .join('\n')}</Datagrid></ArrayField>`,
     },
     boolean: {
         component: BooleanField,
@@ -80,7 +74,10 @@ ${children.map(child => `  ${child.getRepresentation()}`).join('\n')}
         component: props => <TextField source="id" {...props} />, // eslint-disable-line react/display-name
         representation: () => `<TextField source="id" />`,
     },
-    richText: false, // never display a rich text field in a datagrid
+    richText: {
+        component: RichTextField,
+        representation: props => `<RichTextField source="${props.source}" />`,
+    },
     string: {
         component: TextField,
         representation: props => `<TextField source="${props.source}" />`,

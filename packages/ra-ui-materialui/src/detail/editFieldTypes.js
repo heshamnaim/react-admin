@@ -20,8 +20,8 @@ ${children.map(child => `  ${child.getRepresentation()}`).join('\n')}
     },
     array: {
         // eslint-disable-next-line react/display-name
-        component: ({ source, children }) => (
-            <ArrayInput source={source}>
+        component: ({ children, ...props }) => (
+            <ArrayInput {...props}>
                 <SimpleFormIterator>{children}</SimpleFormIterator>
             </ArrayInput>
         ),

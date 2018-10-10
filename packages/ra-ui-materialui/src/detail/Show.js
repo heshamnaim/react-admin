@@ -1,13 +1,18 @@
-import React from 'react';
+import React, { Component, Children } from 'react';
 import PropTypes from 'prop-types';
 import Card from '@material-ui/core/Card';
 import { withStyles } from '@material-ui/core/styles';
 import classnames from 'classnames';
-import { ShowController } from 'ra-core';
+import {
+    ShowController,
+    getElementsFromRecords,
+    InferredElement,
+} from 'ra-core';
 
 import DefaultActions from './ShowActions';
 import TitleForRecord from '../layout/TitleForRecord';
 import CardContentInner from '../layout/CardContentInner';
+import showFieldTypes from './showFieldTypes';
 
 const styles = {
     root: {
@@ -44,66 +49,97 @@ const sanitizeRestProps = ({
     ...rest
 }) => rest;
 
-export const ShowView = ({
-    actions,
-    aside,
-    basePath,
-    children,
-    classes,
-    className,
-    defaultTitle,
-    hasEdit,
-    hasList,
-    isLoading,
-    record,
-    resource,
-    title,
-    version,
-    ...rest
-}) => {
-    if (typeof actions === 'undefined' && hasEdit) {
-        actions = <DefaultActions />;
+export class ShowView extends Component {
+    componentDidUpdate() {
+        const { children, record } = this.props;
+        if (Children.count(children) == 0 && record && !this.inferredChild) {
+            const inferredElements = getElementsFromRecords(
+                [record],
+                showFieldTypes
+            );
+            const inferredChild = new InferredElement(
+                showFieldTypes.show,
+                null,
+                inferredElements
+            );
+
+            process.env.NODE_ENV !== 'production' &&
+                // eslint-disable-next-line no-console
+                console.log(
+                    `Inferred Edit child: ${inferredChild.getRepresentation()}`
+                );
+            this.inferredChild = inferredChild.getElement();
+        }
     }
-    return (
-        <div
-            className={classnames('show-page', classes.root, className)}
-            {...sanitizeRestProps(rest)}
-        >
-            <TitleForRecord
-                title={title}
-                record={record}
-                defaultTitle={defaultTitle}
-            />
-            <Card className={classes.card}>
-                {actions && (
-                    <CardContentInner>
-                        {React.cloneElement(actions, {
-                            basePath,
-                            data: record,
-                            hasList,
-                            hasEdit,
+    render() {
+        const {
+            actions,
+            aside,
+            basePath,
+            children,
+            classes,
+            className,
+            defaultTitle,
+            hasEdit,
+            hasList,
+            isLoading,
+            record,
+            resource,
+            title,
+            version,
+            ...rest
+        } = this.props;
+        const actionsElement =
+            typeof actions === 'undefined' && hasEdit ? (
+                <DefaultActions />
+            ) : (
+                actions
+            );
+        const child = this.inferredChild || Children.toArray(children).pop();
+        if (!child) {
+            return null;
+        }
+        return (
+            <div
+                className={classnames('show-page', classes.root, className)}
+                {...sanitizeRestProps(rest)}
+            >
+                <TitleForRecord
+                    title={title}
+                    record={record}
+                    defaultTitle={defaultTitle}
+                />
+                <Card className={classes.card}>
+                    {actionsElement && (
+                        <CardContentInner>
+                            {React.cloneElement(actionsElement, {
+                                basePath,
+                                data: record,
+                                hasList,
+                                hasEdit,
+                                resource,
+                            })}
+                        </CardContentInner>
+                    )}
+                    {record &&
+                        React.cloneElement(child, {
                             resource,
+                            basePath,
+                            record,
+                            version,
                         })}
-                    </CardContentInner>
-                )}
-                {record &&
-                    React.cloneElement(children, {
+                </Card>
+                {aside &&
+                    React.cloneElement(aside, {
                         resource,
                         basePath,
                         record,
                         version,
                     })}
-            </Card>
-            {aside &&
-                React.cloneElement(aside, {
-                    resource,
-                    basePath,
-                    record,
-                    version,
-                })}
-        </div>
-    );
-};
+            </div>
+        );
+    }
+}
 
 ShowView.propTypes = {
     actions: PropTypes.element,
